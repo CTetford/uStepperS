@@ -282,6 +282,10 @@ friend class uStepperEncoder;
 friend void interrupt0(void);
 friend void TIMER1_COMPA_vect(void) __attribute__ ((signal,used));
 public:			
+	
+	volatile uint16_t dropinStepSize;
+	uint16_t dropinStepSizePrimary;
+	uint16_t dropinStepSizeAlternate;
 
 	/** Instantiate object for the driver */
 	uStepperDriver driver;
@@ -344,7 +348,8 @@ public:
 				float pTerm = 10.0, 
 				float iTerm = 0.0, 
 				float dTerm = 0.0,
-				volatile uint16_t dropinStepSize = 16,
+				volatile uint16_t dropinStepSizePrimary = 16,
+				volatile uint16_t dropinStepSizeAlternate = 16,
 				bool setHome = true,
 				uint8_t invert = 0,
 				uint8_t runCurrent = 50,
@@ -742,8 +747,6 @@ private:
 
 	uint16_t microSteps;
 	uint16_t fullSteps;
-	
-	volatile uint16_t dropinStepSize;
 
 	int32_t stepCnt;
 

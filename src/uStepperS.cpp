@@ -169,7 +169,8 @@ void uStepperS::setup(	uint8_t mode,
 						float pTerm, 
 						float iTerm,
 						float dTerm,
-						volatile uint16_t dropinStepSize,
+						volatile uint16_t dropinStepSizePrimary,
+						volatile uint16_t dropinStepSizeAlternate,
 						bool setHome,
 						uint8_t invert,
 						uint8_t runCurrent,
@@ -180,7 +181,9 @@ void uStepperS::setup(	uint8_t mode,
 	// Should setup mode etc. later
 	this->mode = mode;
 	this->fullSteps = stepsPerRevolution;
-	this->dropinStepSize = 256/dropinStepSize;
+	this->dropinStepSizePrimary = 256/dropinStepSizePrimary;
+	this->dropinStepSizeAlternate = 256/dropinStepSizeAlternate;
+	this->dropinStepSize = dropinStepSizePrimary;
 	this->angleToStep = (float)this->fullSteps * (float)this->microSteps / 360.0;
 	this->rpmToVelocity = (float)(279620.267 * fullSteps * microSteps)/(CLOCKFREQ);
 	this->stepsPerSecondToRPM = 60.0/(this->microSteps*this->fullSteps);
@@ -555,10 +558,11 @@ ISR (PCINT2_vect)
 {
 	if(PIND & 0x10) //Check state of pin D5
 	{
-		pointer->dropinStepSize = 32; //If D5 is high, change the dropinStepSize to match 1/8th microstepping
+		pointer->dropinStepSize = pointer->dropinStepSizeAlternate; //If D5 is high, change the dropinStepSize to the alternate value
 	}
 	else
-		pointer->dropinStepSize = 1; //If D5 is low, change the dropinStepSize to match 1/256th microstepping
+	{
+		pointer->dropinStepSize = pointer->dropinStepSizePrimary; //If D5 is low, set the dropinStepSize to the primary value
 	}
 }
 
