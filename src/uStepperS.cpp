@@ -795,6 +795,11 @@ void uStepperS::invertDropinDir(bool invert)
 	this->invertPidDropinDirection = invert;
 }
 
+void uStepperS::setDropinStepSize(uint16_t dropinStepSize)
+{
+	this->dropinStepSize = dropinStepSize;
+}
+
 void uStepperS::parseCommand(String *cmd)
 {
   uint8_t i = 0;

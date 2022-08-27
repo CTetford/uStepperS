@@ -660,6 +660,14 @@ public:
 	void invertDropinDir(bool invert);
 
 	/**
+	 * @brief      	This method is used to set the number of steps per fullstep, sent from external dropin controller.
+	 *
+	 * @param[in]  	dropinStepSize - 1-256
+	 *
+	 */
+	void setDropinStepSize(uint16_t dropinStepSize);
+
+	/**
 	 * @brief      	This method is used to tune Drop-in parameters.
 	 *				After tuning uStepper S, the parameters are saved in EEPROM
 	 *				
