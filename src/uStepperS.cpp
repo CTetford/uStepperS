@@ -169,7 +169,7 @@ void uStepperS::setup(	uint8_t mode,
 						float pTerm, 
 						float iTerm,
 						float dTerm,
-						uint16_t dropinStepSize,
+						volatile uint16_t dropinStepSize,
 						bool setHome,
 						uint8_t invert,
 						uint8_t runCurrent,
@@ -212,6 +212,7 @@ void uStepperS::setup(	uint8_t mode,
 			pinMode(2,INPUT);		
 			pinMode(3,INPUT);
 			pinMode(4,INPUT);
+			pinMode(5,INPUT_PULLUP);
 			//Enable internal pull-up resistors on the above pins
 			digitalWrite(2,HIGH);
 			digitalWrite(3,HIGH);
@@ -219,6 +220,8 @@ void uStepperS::setup(	uint8_t mode,
 			delay(10000);
 			attachInterrupt(0, interrupt0, FALLING);
 			attachInterrupt(1, interrupt1, CHANGE);
+			PCICR |= B00000100;
+			PCMSK2 |= B00100000;
 			this->driver.setDeceleration( 0xFFFE );
 			this->driver.setAcceleration( 0xFFFE );
 			Serial.begin(9600);
@@ -548,6 +551,17 @@ void uStepperS::filterSpeedPos(posFilter_t *filter, int32_t steps)
 	filter->velEst = (filter->posError * PULSEFILTERKP) + filter->velIntegrator;
 }
 
+ISR (PCINT2_vect)
+{
+	if(PIND & 0x10) //Check state of pin D5
+	{
+		pointer->dropinStepSize = 32; //If D5 is high, change the dropinStepSize to match 1/8th microstepping
+	}
+	else
+		pointer->dropinStepSize = 1; //If D5 is low, change the dropinStepSize to match 1/256th microstepping
+	}
+}
+
 void interrupt1(void)
 {
 	if(PIND & 0x04)
@@ -795,7 +809,7 @@ void uStepperS::invertDropinDir(bool invert)
 	this->invertPidDropinDirection = invert;
 }
 
-void uStepperS::setDropinStepSize(uint16_t dropinStepSize)
+void uStepperS::setDropinStepSize(volatile uint16_t dropinStepSize)
 {
 	this->dropinStepSize = dropinStepSize;
 }

@@ -267,7 +267,6 @@ void interrupt0(void);
  */
 void interrupt1(void);
 
-
 /**
  * @brief      Prototype of class for accessing all features of the uStepper S in
  *             a single object.
@@ -345,7 +344,7 @@ public:
 				float pTerm = 10.0, 
 				float iTerm = 0.0, 
 				float dTerm = 0.0,
-				uint16_t dropinStepSize = 16,
+				volatile uint16_t dropinStepSize = 16,
 				bool setHome = true,
 				uint8_t invert = 0,
 				uint8_t runCurrent = 50,
@@ -665,7 +664,7 @@ public:
 	 * @param[in]  	dropinStepSize - 1-256
 	 *
 	 */
-	void setDropinStepSize(uint16_t dropinStepSize);
+	void setDropinStepSize(volatile uint16_t dropinStepSize);
 
 	/**
 	 * @brief      	This method is used to tune Drop-in parameters.
@@ -744,7 +743,7 @@ private:
 	uint16_t microSteps;
 	uint16_t fullSteps;
 	
-	uint16_t dropinStepSize;
+	volatile uint16_t dropinStepSize;
 
 	int32_t stepCnt;
 
